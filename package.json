@@ -1,7 +1,7 @@
 {
-  "name": "instagram-clone",
+  "name": "like-lion-sample-frontend",
   "version": "1.0.0",
-  "description": "Instagram Clone using Express and pure JavaScript",
+  "description": "",
   "main": "src/api-server/server.js",
   "scripts": {
     "start": "node src/api-server/server.js"

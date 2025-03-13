@@ -1,0 +1,34 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #fafafa;
+}
+
+header {
+    padding: 20px;
+    border-bottom: 1px solid #dbdbdb;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.feed {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 0 10px;
+}
+
+.post {
+    margin-bottom: 30px;
+    border: 1px solid #dbdbdb;
+    background-color: #fff;
+}
+
+.post img {
+    width: 100%;
+    display: block;
+}
+
+.post .info {
+    padding: 10px;
+}
