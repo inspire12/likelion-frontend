@@ -29,8 +29,22 @@ app.get('/api/posts', (req, res) => {
     res.json(dummyPosts);
 });
 
+app.post('/ask', (req, res) => {
+    const message = req.body.message;
+    // 여기서 메시지를 처리하는 로직을 추가할 수 있습니다.
+    // 예를 들어, DB 조회나 외부 API 호출 등.
+
+    // 예제에서는 2초 후에 응답을 보내도록 처리
+    setTimeout(() => {
+        res.json({ answer: `답변: "${message}" 에 대한 처리 결과입니다.` });
+    }, 2000);
+});
+
+
 // 정적 파일 제공: public 폴더의 파일들을 루트 경로에서 제공
 app.use(express.static(path.join(__dirname, '../../public')));
+// 정적 파일 제공 - src/client 폴더 추가 (JS, CSS 접근 가능하게 설정)
+app.use('/src/client', express.static(path.join(__dirname, '../client')));
 
 // 그 외 모든 요청은 index.html로 응답 (싱글 페이지 애플리케이션 처리)
 app.get('*', (req, res) => {

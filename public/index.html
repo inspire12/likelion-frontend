@@ -2,16 +2,23 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>Instagram Clone</title>
+  <title>Like Lion Recruiting</title>
   <!-- src/client/main.css 파일 참조 -->
   <link rel="stylesheet" href="/src/client/main.css">
+  <link rel="stylesheet" href="/src/client/chat.css">
 </head>
 <body>
-<header>Instagram Clone</header>
+<header>Like Lion Recruiting</header>
+
+<!-- API 서버에서 받아온 포스트들이 동적으로 추가됩니다. -->
 <div id="feed" class="feed">
-  <!-- API 서버에서 받아온 포스트들이 동적으로 추가됩니다. -->
 </div>
+<!-- 챗봇 위젯 컨테이너:floating (JS에서 내부를 구성) -->
+<div id="chat-widget" class="chat-widget">
+</div>
+
 <!-- src/client/main.js 파일 참조 -->
 <script src="/src/client/main.js"></script>
+<script src="/src/client/chat.js"></script>
 </body>
 </html>
