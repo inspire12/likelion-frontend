@@ -1,11 +1,32 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const http = require('http');
+const socketIo = require('socket.io');
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
+
+app.use(express.static('client'));
+
 const PORT = process.env.PORT || 5000;
 
+// 소켓 관련
 app.use(cors());
+// 클라이언트가 연결되었을 때 이벤트 처리
+io.on('connection', (socket) => {
+    console.log('사용자가 연결되었습니다.');
+
+    // 클라이언트로부터 채팅 메시지를 받으면 모두에게 전송
+    socket.on('chat message', (msg) => {
+        io.emit('chat message', msg);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('사용자가 연결을 종료하였습니다.');
+    });
+});
 
 // Dummy posts 데이터
 const dummyPosts = [

@@ -17,8 +17,17 @@
 <div id="chat-widget" class="chat-widget">
 </div>
 
+<ul id="messages"></ul>
+<form id="form" action="">
+  <input id="input" autocomplete="off" placeholder="메시지를 입력하세요." />
+  <button>전송</button>
+</form>
+
 <!-- src/client/main.js 파일 참조 -->
 <script src="/src/client/main.js"></script>
 <script src="/src/client/chat.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/src/socket.js" defer></script>
+
 </body>
 </html>
