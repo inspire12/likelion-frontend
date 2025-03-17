@@ -7,7 +7,7 @@ document.getElementById('room-title').innerText = roomName;
 // 채팅에 사용할 이름을 prompt로 입력 (빈 값이면 'anonymous')
 const username = prompt("채팅에 사용할 이름을 입력하세요:") || 'anonymous';
 
-const socket = new SockJS('http://localhost:8080/ws');
+const socket = new SockJS('http://localhost:8083/ws');
 const stompClient = Stomp.over(socket);
 
 // STOMP 연결 및 구독 (메시지 수신은 '/topic/public' 또는 원하는 토픽)

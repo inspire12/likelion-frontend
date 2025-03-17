@@ -6,26 +6,33 @@ const roomName = urlParams.get('roomName');
 document.getElementById('room-title').innerText = roomName;
 
 // 채팅에 사용할 이름을 prompt로 입력 (빈 값이면 'anonymous')
-const username = prompt("채팅에 사용할 이름을 입력하세요:") || 'anonymous';
+let username = localStorage.getItem("username");
+if (!username) {
+    username = prompt("채팅에 사용할 이름을 입력하세요:") || 'anonymous';
+    localStorage.setItem("username", username);
+}
+
 
 // WebSocket 연결: (https, ws 자동 선택)
-const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-const port = 8081;
-const socket = new WebSocket(`${protocol}//${window.location.host}:${port}`);
+const socket = new WebSocket(`ws://localhost:8083/ws`);
 
 // 연결 시 join 메시지 전송
 socket.addEventListener('open', () => {
-    socket.send(JSON.stringify({ type: 'join', roomId, username }));
-});
-
-// 연결 시 join 메시지 전송 (roomId와 username 포함)
-socket.addEventListener('open', () => {
-    socket.send(JSON.stringify({ type: 'join', roomId, username }));
+    const chatMessage = {
+        type: 'JOIN',
+        roomId: roomId,
+        sender: username
+    };
+    socket.send(JSON.stringify(chatMessage));
 });
 
 socket.addEventListener('message', (event) => {
+    console.log(event.data)
     const data = JSON.parse(event.data);
-    if (data.type === 'chat') {
+    if (data.type && data.type.toUpperCase() === 'CHAT') {
+        displayMessage(data);
+    }
+    if (data.type && data.type.toUpperCase() === 'JOIN') {
         displayMessage(data);
     }
 });
@@ -40,9 +47,10 @@ document.getElementById('chat-form').addEventListener('submit', (e) => {
         sender: username,
         content: message
     };
-    socket.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+    socket.send(JSON.stringify(chatMessage));
     input.value = '';
 });
+
 
 function displayMessage(data) {
     console.log("displayMessage 호출됨", data);
