@@ -1,5 +1,6 @@
 // URL 쿼리에서 roomId와 roomName 가져오기
 const urlParams = new URLSearchParams(window.location.search);
+
 const roomId = urlParams.get('roomId');
 const roomName = urlParams.get('roomName');
 document.getElementById('room-title').innerText = roomName;
@@ -8,48 +9,26 @@ document.getElementById('room-title').innerText = roomName;
 const username = prompt("채팅에 사용할 이름을 입력하세요:") || 'anonymous';
 
 // WebSocket 연결: (https, ws 자동 선택)
-// const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-// const socket = new WebSocket(`${protocol}//${window.location.host}`);
+const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const port = 8081;
+const socket = new WebSocket(`${protocol}//${window.location.host}:${port}`);
 
-const socket = new SockJS('http://localhost:8080/ws');
-const stompClient = Stomp.over(socket);
-
-// STOMP 연결 및 구독 (메시지 수신은 '/topic/public' 또는 원하는 토픽)
-stompClient.connect({}, function(frame) {
-    console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/public', function(message) {
-        console.log(message.body);
-        const data = JSON.parse(message.body);
-        // 수신된 메시지를 화면에 출력
-        if (data.type && data.type.toUpperCase() === 'CHAT') {
-            displayMessage(data);
-        }
-    });
-
-    // 연결 완료 후 join 메시지(옵션)를 보낼 수 있음
-    stompClient.send("/app/chat.sendMessage", {}, JSON.stringify({
-        type: 'JOIN',
-        roomId: roomId,
-        sender: username
-    }));
+// 연결 시 join 메시지 전송
+socket.addEventListener('open', () => {
+    socket.send(JSON.stringify({ type: 'join', roomId, username }));
 });
 
-// // 연결 시 join 메시지 전송
-// socket.addEventListener('open', () => {
-//     socket.send(JSON.stringify({ type: 'join', roomId, username }));
-// });
-//
-// // 연결 시 join 메시지 전송 (roomId와 username 포함)
-// socket.addEventListener('open', () => {
-//     socket.send(JSON.stringify({ type: 'join', roomId, username }));
-// });
-//
-// socket.addEventListener('message', (event) => {
-//     const data = JSON.parse(event.data);
-//     if (data.type === 'chat') {
-//         displayMessage(data);
-//     }
-// });
+// 연결 시 join 메시지 전송 (roomId와 username 포함)
+socket.addEventListener('open', () => {
+    socket.send(JSON.stringify({ type: 'join', roomId, username }));
+});
+
+socket.addEventListener('message', (event) => {
+    const data = JSON.parse(event.data);
+    if (data.type === 'chat') {
+        displayMessage(data);
+    }
+});
 
 document.getElementById('chat-form').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -61,7 +40,7 @@ document.getElementById('chat-form').addEventListener('submit', (e) => {
         sender: username,
         content: message
     };
-    stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+    socket.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
     input.value = '';
 });
 
@@ -88,6 +67,6 @@ function displayMessage(data) {
 }
 
 function leaveRoom() {
-    // socket.send(JSON.stringify({ type: 'leave', roomId }));
+    socket.send(JSON.stringify({ type: 'leave', roomId }));
     window.location.href = 'index.html';
 }
