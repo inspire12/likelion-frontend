@@ -22,5 +22,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function joinRoom(roomId, roomName) {
-    window.location.href = `chatRoom.html?roomId=${roomId}&roomName=${encodeURIComponent(roomName)}`;
+    window.location.href = `chat-room.html?roomId=${roomId}&roomName=${encodeURIComponent(roomName)}`;
 }
