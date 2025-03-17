@@ -21,5 +21,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+<<<<<<<< HEAD:base/.gitignore
 
 ../.idea
+========
+package-lock.json
+.idea
+>>>>>>>> origin/feat/websocket-stomp:.gitignore
