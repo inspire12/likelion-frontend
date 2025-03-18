@@ -5,8 +5,11 @@ const roomName = urlParams.get('roomName');
 document.getElementById('room-title').innerText = roomName;
 
 // 채팅에 사용할 이름을 prompt로 입력 (빈 값이면 'anonymous')
-const username = prompt("채팅에 사용할 이름을 입력하세요:") || 'anonymous';
-
+let username = localStorage.getItem("username");
+if (!username) {
+    username = prompt("채팅에 사용할 이름을 입력하세요:") || 'anonymous';
+    localStorage.setItem("username", username);
+}
 const socket = new SockJS('http://localhost:8083/ws');
 const stompClient = Stomp.over(socket);
 
