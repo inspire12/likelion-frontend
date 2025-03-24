@@ -10,6 +10,7 @@ if (!username) {
     username = prompt("채팅에 사용할 이름을 입력하세요:") || 'anonymous';
     localStorage.setItem("username", username);
 }
+// const socket = new SockJS('http://223.130.146.213:8083/ws');
 const socket = new SockJS('http://localhost:8083/ws');
 const stompClient = Stomp.over(socket);
 
