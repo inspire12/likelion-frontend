@@ -14,9 +14,17 @@ if (!username) {
 const socket = new SockJS('http://localhost:8083/ws');
 const stompClient = Stomp.over(socket);
 
+const jwtToken = "hi"
+let headers = {
+    Authorization: "Bearer " + jwtToken  // JWT 토큰 추가
+};
+
+
 // STOMP 연결 및 구독 (메시지 수신은 '/topic/public' 또는 원하는 토픽)
-stompClient.connect({}, function(frame) {
+stompClient.connect(headers, function(frame) {
     console.log('Connected: ' + frame);
+    // const subscription = stompClient.subscribe('/queue/messages-' + sessionId, function(message) {
+
     const subscription = stompClient.subscribe('/topic/public', function(message) {
         console.log(message.body);
         const data = JSON.parse(message.body);
