@@ -3,7 +3,7 @@ const http = require('http');
 const path = require('path');
 const apiRoutes = require('./routes/api');
 const chatRoutes = require('./routes/chat');
-
+const netStatus = require('./utils/status');
 
 const app = express();
 const server = http.createServer(app);
@@ -22,6 +22,9 @@ app.use('/chat', chatRoutes);
 
 
 const PORT = process.env.PORT || 3000;
+
+const HOST = netStatus.getInternalIp(); // 172로 시작하는 내부 IP를 가져옴
+
 server.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://${HOST}:${PORT}`);
 });
