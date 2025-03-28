@@ -16,6 +16,13 @@ const stompClient = Stomp.over(socket);
 
 // STOMP 연결 및 구독 (메시지 수신은 '/topic/public' 또는 원하는 토픽)
 stompClient.connect({}, function(frame) {
+/*
+const userSubscription = stompClient.subscribe('/user/queue/private', function(message) {
+        console.log('개인 메세지 수신')
+        displayChatMessage(message)
+    });
+    console.log("subscription: " + JSON.stringify(subscription) + " " + JSON.stringify(userSubscription));
+*/
     console.log('Connected: ' + frame);
     const subscription = stompClient.subscribe("/topic/public", function(message) {
         console.log(message.body);
@@ -28,7 +35,12 @@ stompClient.connect({}, function(frame) {
             displayMessage(data);
         }
     });
-    console.log("subscription: " + subscription);
+    const userSubscription = stompClient.subscribe('/user/queue/private', function(message) {
+            console.log('개인 메세지 수신')
+            displayChatMessage(message)
+        });
+//    console.log("subscription: " + subscription);
+    console.log("subscription: " + JSON.stringify(subscription) + " " + JSON.stringify(userSubscription));
     // 연결 완료 후 join 메시지(옵션)를 보낼 수 있음
     stompClient.send("/app/chat.addUser", {}, JSON.stringify({
         type: 'JOIN',
