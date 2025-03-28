@@ -8,51 +8,53 @@ document.getElementById('room-title').innerText = roomName;
 let username = localStorage.getItem("username");
 if (!username) {
     username = prompt("채팅에 사용할 이름을 입력하세요:") || 'anonymous';
+    username = username.trim()
     localStorage.setItem("username", username);
 }
 // const socket = new SockJS('http://223.130.146.213:8083/ws');
-const socket = new SockJS('');
+//const socket = new SockJS('http://localhost:8083/ws');
+const socket = new SockJS('http://localhost:8083/ws?token=' + username);
 const stompClient = Stomp.over(socket);
 
+const jwtToken = username
+let headers = {
+    Authorization: "Bearer " + jwtToken  // JWT 토큰 추가
+};
+
+function displayChatMessage(message) {
+    console.log(message.body);
+    const data = JSON.parse(message.body);
+    // 수신된 메시지를 화면에 출력
+    if (data.type && data.type.toUpperCase() === 'CHAT') {
+        displayMessage(data);
+    }
+    if (data.type && data.type.toUpperCase() === 'JOIN') {
+        displayMessage(data);
+    }
+}
+
 // STOMP 연결 및 구독 (메시지 수신은 '/topic/public' 또는 원하는 토픽)
-stompClient.connect({}, function(frame) {
+stompClient.connect(headers, function(frame) {
     console.log('Connected: ' + frame);
-    const subscription = stompClient.subscribe(, function(message) {
-        console.log(message.body);
-        const data = JSON.parse(message.body);
-        // 수신된 메시지를 화면에 출력
-        if (data.type && data.type.toUpperCase() === 'CHAT') {
-            displayMessage(data);
-        }
-        if (data.type && data.type.toUpperCase() === 'JOIN') {
-            displayMessage(data);
-        }
+    // broadcasting 채널 구독
+    const subscription = stompClient.subscribe('/topic/public', function(message) {
+        displayChatMessage(message)
     });
-    console.log("subscription: " + subscription);
+    // 개인에게 보내는 채널 구독
+    const userSubscription = stompClient.subscribe('/user/queue/private', function(message) {
+        console.log('개인 메세지 수신')
+        displayChatMessage(message)
+    });
+    console.log("subscription: " + JSON.stringify(subscription) + " " + JSON.stringify(userSubscription));
     // 연결 완료 후 join 메시지(옵션)를 보낼 수 있음
-    stompClient.send(, {}, JSON.stringify({
+    stompClient.send("/app/chat.addUser", {}, JSON.stringify({
         type: 'JOIN',
         roomId: roomId,
         sender: username
     }));
-});
 
-// // 연결 시 join 메시지 전송
-// socket.addEventListener('open', () => {
-//     socket.send(JSON.stringify({ type: 'join', roomId, username }));
-// });
-//
-// // 연결 시 join 메시지 전송 (roomId와 username 포함)
-// socket.addEventListener('open', () => {
-//     socket.send(JSON.stringify({ type: 'join', roomId, username }));
-// });
-//
-// socket.addEventListener('message', (event) => {
-//     const data = JSON.parse(event.data);
-//     if (data.type === 'chat') {
-//         displayMessage(data);
-//     }
-// });
+
+});
 
 document.getElementById('chat-form').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -64,7 +66,7 @@ document.getElementById('chat-form').addEventListener('submit', (e) => {
         sender: username,
         content: message
     };
-    stompClient.send(, {}, JSON.stringify(chatMessage));
+    stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
     input.value = '';
 });
 
