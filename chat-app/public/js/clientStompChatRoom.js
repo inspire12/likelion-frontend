@@ -11,30 +11,38 @@ if (!username) {
     localStorage.setItem("username", username);
 }
 // const socket = new SockJS('http://223.130.146.213:8083/ws');
-const socket = new SockJS('http://localhost:8083/ws');
+const socket = new SockJS('http://localhost:8083/ws?username=' + username);
 const stompClient = Stomp.over(socket);
+
+function sendMessage(message) {
+    console.log(message.body);
+    const data = JSON.parse(message.body);
+    // 수신된 메시지를 화면에 출력
+    if (data.type && data.type.toUpperCase() === 'CHAT') {
+        displayMessage(data);
+    }
+    if (data.type && data.type.toUpperCase() === 'JOIN') {
+        displayMessage(data);
+    }
+}
 
 // STOMP 연결 및 구독 (메시지 수신은 '/topic/public' 또는 원하는 토픽)
 stompClient.connect({}, function(frame) {
     console.log('Connected: ' + frame);
     const subscription = stompClient.subscribe("/topic/public", function(message) {
-        console.log(message.body);
-        const data = JSON.parse(message.body);
-        // 수신된 메시지를 화면에 출력
-        if (data.type && data.type.toUpperCase() === 'CHAT') {
-            displayMessage(data);
-        }
-        if (data.type && data.type.toUpperCase() === 'JOIN') {
-            displayMessage(data);
-        }
+        sendMessage(message);
     });
+    const userSubscription = stompClient.subscribe("/user/queue/private", function (message) {
+        sendMessage(message);
+    })
+
     console.log("subscription: " + subscription);
     // 연결 완료 후 join 메시지(옵션)를 보낼 수 있음
-    stompClient.send("/app/chat.addUser", {}, JSON.stringify({
-        type: 'JOIN',
-        roomId: roomId,
-        sender: username
-    }));
+    // stompClient.send("/app/chat.addUser", {}, JSON.stringify({
+    //     type: 'JOIN',
+    //     roomId: roomId,
+    //     sender: username
+    // }));
 });
 
 // // 연결 시 join 메시지 전송
