@@ -32,7 +32,7 @@ socket.addEventListener('message', (event) => {
     if (data.type && data.type.toUpperCase() === 'CHAT') {
         displayMessage(data);
     }
-    if (data.type && data.type.toUpperCase() === 'JOIN') {
+    if (data.type && data.type.toUpperCase() === 'J OIN') {
         displayMessage(data);
     }
 });
