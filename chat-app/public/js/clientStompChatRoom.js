@@ -11,13 +11,13 @@ if (!username) {
     localStorage.setItem("username", username);
 }
 // const socket = new SockJS('http://223.130.146.213:8083/ws');
-const socket = new SockJS('');
+const socket = new SockJS('http://localhost:8083/ws');
 const stompClient = Stomp.over(socket);
 
 // STOMP 연결 및 구독 (메시지 수신은 '/topic/public' 또는 원하는 토픽)
 stompClient.connect({}, function(frame) {
     console.log('Connected: ' + frame);
-    const subscription = stompClient.subscribe(, function(message) {
+    const subscription = stompClient.subscribe("/topic/public", function(message) {
         console.log(message.body);
         const data = JSON.parse(message.body);
         // 수신된 메시지를 화면에 출력
@@ -30,7 +30,7 @@ stompClient.connect({}, function(frame) {
     });
     console.log("subscription: " + subscription);
     // 연결 완료 후 join 메시지(옵션)를 보낼 수 있음
-    stompClient.send(, {}, JSON.stringify({
+    stompClient.send("/app/chat.addUser", {}, JSON.stringify({
         type: 'JOIN',
         roomId: roomId,
         sender: username
@@ -64,7 +64,7 @@ document.getElementById('chat-form').addEventListener('submit', (e) => {
         sender: username,
         content: message
     };
-    stompClient.send(, {}, JSON.stringify(chatMessage));
+    stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
     input.value = '';
 });
 
@@ -91,6 +91,6 @@ function displayMessage(data) {
 }
 
 function leaveRoom() {
-    stompClient.send(JSON.stringify({ type: 'leave', roomId }));
+    stompClient.send("/topic/public",JSON.stringify({ type: 'leave', roomId }));
     window.location.href = 'index.html';
 }
