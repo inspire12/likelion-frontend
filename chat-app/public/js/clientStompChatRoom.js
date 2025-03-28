@@ -11,7 +11,8 @@ if (!username) {
     localStorage.setItem("username", username);
 }
 // const socket = new SockJS('http://223.130.146.213:8083/ws');
-const socket = new SockJS('http://localhost:8083/ws');
+//const socket = new SockJS('http://localhost:8083/ws');
+const socket = new SockJS('http://localhost:8083/ws?token=' + username);
 const stompClient = Stomp.over(socket);
 
 // STOMP 연결 및 구독 (메시지 수신은 '/topic/public' 또는 원하는 토픽)
