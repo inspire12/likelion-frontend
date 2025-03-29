@@ -12,7 +12,8 @@ if (!username) {
     localStorage.setItem("username", username);
 }
 // const socket = new SockJS('http://223.130.146.213:8083/ws');
-const socket = new SockJS('http://localhost:8083/ws?token=' + username);
+// const socket = new SockJS('http://localhost:8083/ws?token=' + username);
+const socket = new SockJS('http://localhost:8084/ws?token=' + username);
 const stompClient = Stomp.over(socket);
 
 const jwtToken = username
